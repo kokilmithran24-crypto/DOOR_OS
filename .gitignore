@@ -2,12 +2,7 @@ node_modules/
 **/node_modules/
 .next/
 **/.next/
-out/
-**/out/
-dist/
-**/dist/
-build/
-**/build/
+door-os-backend/dist/
 .env
 **/.env
 .env.local

@@ -11,9 +11,11 @@
     "dev": "concurrently -n \"backend,frontend\" -c \"magenta,cyan\" \"npm run dev --prefix door-os-backend\" \"npm run dev --prefix door-os-frontend\"",
     "dev:backend": "npm run dev --prefix door-os-backend",
     "dev:frontend": "npm run dev --prefix door-os-frontend",
-    "build": "npm run build --prefix door-os-backend && npm run build --prefix door-os-frontend",
+    "build": "npm run build --prefix door-os-frontend && node scripts/publish-sync.js",
+    "build:all": "npm run build --prefix door-os-backend && npm run build --prefix door-os-frontend && node scripts/publish-sync.js",
     "build:backend": "npm run build --prefix door-os-backend",
-    "build:frontend": "npm run build --prefix door-os-frontend",
+    "build:frontend": "npm run build --prefix door-os-frontend && node scripts/publish-sync.js",
+    "build:static": "npm run build --prefix door-os-frontend && node scripts/publish-sync.js",
     "start": "concurrently -n \"backend,frontend\" -c \"magenta,cyan\" \"npm run start --prefix door-os-backend\" \"npm run start --prefix door-os-frontend\"",
     "start:backend": "npm run start --prefix door-os-backend",
     "start:frontend": "npm run start --prefix door-os-frontend",
@@ -23,4 +25,3 @@
     "concurrently": "^9.1.2"
   }
 }
-
