@@ -1,0 +1,47 @@
+services:
+  # 1. Door OS Backend (Express + TypeScript + MongoDB + Socket.IO)
+  - type: web
+    name: door-os-backend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: door-os-backend
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: CLIENT_ORIGIN
+        value: "*"
+
+  # 2. Door OS Frontend (Next.js 15 + React 19)
+  - type: web
+    name: door-os-frontend
+    runtime: node
+    plan: free
+    region: oregon
+    rootDir: door-os-frontend
+    buildCommand: npm install --include=dev && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: door-os-backend
+          envVarKey: RENDER_EXTERNAL_URL
+      - key: NEXT_PUBLIC_SOCKET_URL
+        fromService:
+          type: web
+          name: door-os-backend
+          envVarKey: RENDER_EXTERNAL_URL

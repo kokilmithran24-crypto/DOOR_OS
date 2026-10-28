@@ -3,9 +3,24 @@ import { getToken } from "./api";
 
 let socket: Socket | null = null;
 
-const SOCKET_URL =
-  process.env.NEXT_PUBLIC_SOCKET_URL ||
-  (typeof window !== "undefined" ? window.location.origin.replace(/:3000$/, ":4000") : "http://localhost:4000");
+function resolveSocketUrl(): string {
+  if (process.env.NEXT_PUBLIC_SOCKET_URL) {
+    let url = process.env.NEXT_PUBLIC_SOCKET_URL.trim();
+    if (!url.startsWith("http") && !url.startsWith("ws")) {
+      url = `https://${url}`;
+    }
+    return url;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
+    return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, "");
+  }
+  if (typeof window !== "undefined") {
+    return window.location.origin.replace(/:3000$/, ":4000");
+  }
+  return "http://localhost:4000";
+}
+
+const SOCKET_URL = resolveSocketUrl();
 
 export function getSocket(): Socket | null {
   return socket;

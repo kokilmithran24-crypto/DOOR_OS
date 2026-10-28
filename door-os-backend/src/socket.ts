@@ -1,2 +1,49 @@
-import type {Server as HttpServer} from "http";import {Server} from "socket.io";import jwt from "jsonwebtoken";import {env} from "./config/env";import {User} from "./models/User";
-export function attachSockets(server:HttpServer){const io=new Server(server,{cors:{origin:env.clientOrigin.split(",").map(s=>s.trim()),methods:["GET","POST"]}});io.use(async(socket,next)=>{try{const token=socket.handshake.auth?.token;if(typeof token!=="string")return next(new Error("Authentication required"));const p=jwt.verify(token,env.jwtSecret) as jwt.JwtPayload;if(typeof p.sub!=="string"||!(await User.exists({_id:p.sub})))return next(new Error("Invalid user"));socket.data.userId=p.sub;next()}catch{next(new Error("Invalid or expired token"))}});io.on("connection",socket=>{const room=`user:${socket.data.userId}`;socket.join(room);for(const event of ["app:opened","window:moved","desktop:sync"] as const)socket.on(event,(payload:unknown)=>{if(JSON.stringify(payload??{}).length>10000)return;socket.to(room).emit(event,{payload,from:socket.id,at:Date.now()})})});return io}
+import type { Server as HttpServer } from "http";
+import { Server } from "socket.io";
+import jwt from "jsonwebtoken";
+import { env } from "./config/env";
+import { User } from "./models/User";
+
+export function attachSockets(server: HttpServer) {
+  const io = new Server(server, {
+    cors: {
+      origin: (origin, callback) => callback(null, true),
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+    transports: ["websocket", "polling"],
+  });
+
+  io.use(async (socket, next) => {
+    try {
+      const token = socket.handshake.auth?.token;
+      if (typeof token !== "string") {
+        return next(new Error("Authentication required"));
+      }
+
+      const p = jwt.verify(token, env.jwtSecret) as jwt.JwtPayload;
+      if (typeof p.sub !== "string" || !(await User.exists({ _id: p.sub }))) {
+        return next(new Error("Invalid user"));
+      }
+
+      socket.data.userId = p.sub;
+      next();
+    } catch {
+      next(new Error("Invalid or expired token"));
+    }
+  });
+
+  io.on("connection", (socket) => {
+    const room = `user:${socket.data.userId}`;
+    socket.join(room);
+
+    for (const event of ["app:opened", "window:moved", "desktop:sync"] as const) {
+      socket.on(event, (payload: unknown) => {
+        if (JSON.stringify(payload ?? {}).length > 10000) return;
+        socket.to(room).emit(event, { payload, from: socket.id, at: Date.now() });
+      });
+    }
+  });
+
+  return io;
+}

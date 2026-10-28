@@ -1,7 +1,16 @@
-const API_BASE = typeof window !== "undefined"
-  ? (process.env.NEXT_PUBLIC_API_URL || "/api")
-  : (process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api");
+function resolveApiBase(): string {
+  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  if (!envUrl) {
+    return "/api";
+  }
+  let clean = envUrl.trim();
+  if (!clean.startsWith("http") && !clean.startsWith("/")) {
+    clean = `https://${clean}`;
+  }
+  return clean;
+}
 
+const API_BASE = resolveApiBase();
 const TOKEN_KEY = "door_os_jwt_token";
 
 export interface UserPreferences {
@@ -97,7 +106,8 @@ async function request<T>(endpoint: string, options: RequestInit = {}): Promise<
   const data = (await response.json().catch(() => ({}))) as Record<string, unknown>;
 
   if (!response.ok) {
-    const message = (typeof data?.error === "string" && data.error) ||
+    const message =
+      (typeof data?.error === "string" && data.error) ||
       (typeof data?.message === "string" && data.message) ||
       `HTTP ${response.status}`;
     throw new Error(message);

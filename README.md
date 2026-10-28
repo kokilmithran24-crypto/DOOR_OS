@@ -36,7 +36,49 @@ A complete full-stack web desktop environment combining a **Next.js 15 frontend*
 
 ---
 
-## 🚀 Quick Start
+## ☁️ Deploying on Render (Render.com)
+
+This repository includes a ready-to-use **`render.yaml` Blueprint** for 1-click deployment on Render.
+
+### 1-Click Blueprint Deployment:
+1. Log in to [Render Dashboard](https://dashboard.render.com/).
+2. Click **New +** in the top right and select **Blueprint**.
+3. Connect your GitHub repository: `kokilmithran24-crypto/DOOR_OS`.
+4. Render will read `render.yaml` and configure two Web Services:
+   - **`door-os-backend`**: Node/Express Web Service.
+   - **`door-os-frontend`**: Next.js 15 Web Service.
+5. In the prompt for `MONGODB_URI`:
+   - Paste your [MongoDB Atlas](https://www.mongodb.com/atlas) connection URI (e.g. `mongodb+srv://<user>:<password>@cluster0.xxxxx.mongodb.net/door_os?retryWrites=true&w=majority`).
+6. Click **Apply**. Render will automatically build, deploy, and link both services!
+
+### Manual Setup (if creating individual Web Services on Render):
+
+#### Service 1: Backend (`door-os-backend`)
+- **Type**: Web Service (Node runtime)
+- **Root Directory**: `door-os-backend`
+- **Build Command**: `npm install --include=dev && npm run build`
+- **Start Command**: `npm run start`
+- **Health Check Path**: `/api/health`
+- **Environment Variables**:
+  - `NODE_ENV`: `production`
+  - `PORT`: `10000`
+  - `MONGODB_URI`: `<your-mongodb-atlas-uri>`
+  - `JWT_SECRET`: `<random-secret-at-least-32-chars>`
+  - `CLIENT_ORIGIN`: `*`
+
+#### Service 2: Frontend (`door-os-frontend`)
+- **Type**: Web Service (Node runtime)
+- **Root Directory**: `door-os-frontend`
+- **Build Command**: `npm install --include=dev && npm run build`
+- **Start Command**: `npm run start`
+- **Environment Variables**:
+  - `NODE_ENV`: `production`
+  - `NEXT_PUBLIC_API_URL`: `https://door-os-backend.onrender.com/api` (replace with your backend's Render URL)
+  - `NEXT_PUBLIC_SOCKET_URL`: `https://door-os-backend.onrender.com`
+
+---
+
+## 🚀 Local Quick Start
 
 ### 1. Prerequisites
 - **Node.js** (v20+ recommended)
@@ -47,8 +89,6 @@ The project comes pre-configured with ready-to-run `.env` files:
 - Backend: `door-os-backend/.env`
 - Frontend: `door-os-frontend/.env.local`
 
-*(To customize, edit `door-os-backend/.env` with your MongoDB URI or production JWT secret).*
-
 ### 3. Install Dependencies
 Run from the root directory:
 ```bash
@@ -57,7 +97,6 @@ npm run install:all
 ```
 
 ### 4. Run Both Frontend and Backend Concurrently
-Run a single command to start the entire full-stack application:
 ```bash
 npm run dev
 ```
@@ -72,6 +111,7 @@ npm run dev
 
 ```
 kokila play girl/
+├── render.yaml                  # Render.com Blueprint (1-click deployment)
 ├── package.json                 # Unified monorepo scripts & workspaces
 ├── .env.example                 # Global environment configuration template
 ├── README.md                    # Full-stack documentation
@@ -149,17 +189,3 @@ Door OS includes authenticated WebSocket synchronization across tabs and devices
 - **`app:opened`**: Notifies other sessions when an app is launched.
 - **`window:moved`**: Synchronizes window positions.
 - **`desktop:sync`**: Synchronizes wallpaper, theme, and desktop state in real time.
-
----
-
-## 💻 Available Scripts
-
-| Command | Action |
-|---|---|
-| `npm run dev` | Runs backend (port 4000) and frontend (port 3000) concurrently |
-| `npm run dev:backend` | Runs only the Express backend with `tsx watch` |
-| `npm run dev:frontend` | Runs only the Next.js frontend |
-| `npm run build` | Compiles backend TypeScript and builds Next.js production bundle |
-| `npm run start` | Starts both backend and frontend production servers |
-| `npm run install:all` | Installs root, backend, and frontend dependencies |
-
