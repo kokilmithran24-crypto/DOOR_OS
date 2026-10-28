@@ -1,0 +1,1 @@
+import {Router} from "express";import {asyncHandler} from "../utils/asyncHandler";import {getPreferences,updatePreferences} from "../controllers/preferences.controller";const r=Router();r.get("/",asyncHandler(getPreferences));r.put("/",asyncHandler(updatePreferences));export default r;

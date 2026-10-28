@@ -1,0 +1,7 @@
+import type {Request,Response} from "express";import {z} from "zod";import {App} from "../models/App";import {HttpError} from "../utils/httpError";
+const schema=z.object({name:z.string().trim().min(1).max(80),description:z.string().max(500).optional(),kind:z.enum(["notes","planner","widget","custom"]).optional(),manifest:z.record(z.unknown()).optional(),source:z.string().max(50000).optional()});
+export async function listApps(req:Request,res:Response){res.json({apps:await App.find({userId:req.userId}).sort({updatedAt:-1})})}
+export async function createApp(req:Request,res:Response){const body=schema.parse(req.body);const app=await App.create({userId:req.userId,...body});res.status(201).json({app})}
+export async function getApp(req:Request,res:Response){const app=await App.findOne({_id:req.params.id,userId:req.userId});if(!app)throw new HttpError(404,"App not found");res.json({app})}
+export async function updateApp(req:Request,res:Response){const body=schema.partial().parse(req.body);const app=await App.findOneAndUpdate({_id:req.params.id,userId:req.userId},{$set:body},{new:true,runValidators:true});if(!app)throw new HttpError(404,"App not found");res.json({app})}
+export async function deleteApp(req:Request,res:Response){const app=await App.findOneAndDelete({_id:req.params.id,userId:req.userId});if(!app)throw new HttpError(404,"App not found");res.status(204).end()}

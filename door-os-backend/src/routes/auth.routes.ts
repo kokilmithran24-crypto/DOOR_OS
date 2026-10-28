@@ -1,0 +1,1 @@
+import {Router} from "express";import {asyncHandler} from "../utils/asyncHandler";import {register,login,me} from "../controllers/auth.controller";import {requireAuth} from "../middleware/auth";const r=Router();r.post("/register",asyncHandler(register));r.post("/login",asyncHandler(login));r.get("/me",requireAuth,asyncHandler(me));export default r;

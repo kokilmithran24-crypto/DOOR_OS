@@ -1,0 +1,1 @@
+import {Router} from "express";import {asyncHandler} from "../utils/asyncHandler";import * as c from "../controllers/fs.controller";const r=Router();r.get("/",asyncHandler(c.listFiles));r.post("/",asyncHandler(c.createFile));r.put("/:id",asyncHandler(c.updateFile));r.delete("/:id",asyncHandler(c.deleteFile));export default r;

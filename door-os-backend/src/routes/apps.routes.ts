@@ -1,0 +1,1 @@
+import {Router} from "express";import {asyncHandler} from "../utils/asyncHandler";import * as c from "../controllers/apps.controller";const r=Router();r.get("/",asyncHandler(c.listApps));r.post("/",asyncHandler(c.createApp));r.get("/:id",asyncHandler(c.getApp));r.put("/:id",asyncHandler(c.updateApp));r.delete("/:id",asyncHandler(c.deleteApp));export default r;

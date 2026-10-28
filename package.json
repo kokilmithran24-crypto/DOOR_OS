@@ -1,0 +1,26 @@
+{
+  "name": "door-os-fullstack",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Door OS - Full-Stack Browser Desktop Operating System",
+  "workspaces": [
+    "door-os-backend",
+    "door-os-frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n \"backend,frontend\" -c \"magenta,cyan\" \"npm run dev --prefix door-os-backend\" \"npm run dev --prefix door-os-frontend\"",
+    "dev:backend": "npm run dev --prefix door-os-backend",
+    "dev:frontend": "npm run dev --prefix door-os-frontend",
+    "build": "npm run build --prefix door-os-backend && npm run build --prefix door-os-frontend",
+    "build:backend": "npm run build --prefix door-os-backend",
+    "build:frontend": "npm run build --prefix door-os-frontend",
+    "start": "concurrently -n \"backend,frontend\" -c \"magenta,cyan\" \"npm run start --prefix door-os-backend\" \"npm run start --prefix door-os-frontend\"",
+    "start:backend": "npm run start --prefix door-os-backend",
+    "start:frontend": "npm run start --prefix door-os-frontend",
+    "install:all": "npm install && npm install --prefix door-os-backend && npm install --prefix door-os-frontend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
+

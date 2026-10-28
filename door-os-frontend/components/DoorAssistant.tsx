@@ -1,0 +1,1 @@
+ "use client";import AppContent from "./AppContent";export default function DoorAssistant(){return <AppContent app="assistant"/>}

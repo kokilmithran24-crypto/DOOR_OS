@@ -1,0 +1,2 @@
+import type {ErrorRequestHandler} from "express";import {HttpError} from "../utils/httpError";
+export const errorHandler:ErrorRequestHandler=(err,_req,res,_next)=>{if(err?.name==="ValidationError")return res.status(400).json({error:"Validation failed",details:err.message});if(err?.code===11000)return res.status(409).json({error:"Resource already exists"});const status=err instanceof HttpError?err.status:500;const message=status===500?"Internal server error":err.message;if(status===500)console.error(err);res.status(status).json({error:message})};

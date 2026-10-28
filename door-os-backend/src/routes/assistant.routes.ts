@@ -1,0 +1,1 @@
+import {Router} from "express";import {asyncHandler} from "../utils/asyncHandler";import {askAssistant} from "../controllers/assistant.controller";const r=Router();r.post("/",asyncHandler(askAssistant));export default r;

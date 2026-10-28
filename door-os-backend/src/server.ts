@@ -1,0 +1,2 @@
+import {createServer} from "http";import app from "./app";import {connectDB} from "./config/db";import {env} from "./config/env";import {attachSockets} from "./socket";
+async function main(){await connectDB();const server=createServer(app);attachSockets(server);server.listen(env.port,()=>console.log(`Door OS API listening on http://localhost:${env.port}`));const stop=()=>server.close(()=>process.exit(0));process.on("SIGINT",stop);process.on("SIGTERM",stop)}main().catch(e=>{console.error("Failed to start server",e);process.exit(1)});
